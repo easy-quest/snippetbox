@@ -3,11 +3,19 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 )
 
 // Обработчик главной странице.
 func home(w http.ResponseWriter, r *http.Request) {
+	// Проверяется, если текущий путь URL запроса точно совпадает с шаблоном "/". Если нет, вызывается
+	// функция http.NotFound() для возвращения клиенту ошибки 404.
+	// Важно, чтобы мы завершили работу обработчика через return. Если мы забудем про "return", то обработчик
+	// продолжит работу и выведет сообщение "Привет из SnippetBox" как ни в чем не бывало.
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+
 	w.Write([]byte("Привет из Snippetbox"))
 }
 
@@ -22,11 +30,6 @@ func createSnippet(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	port := os.Getenv("PORT")
-
-	if port == "" {
-		log.Fatal("$PORT must be set")
-	}
 	// Регистрируем два новых обработчика и соответствующие URL-шаблоны в
 	// маршрутизаторе servemux
 	mux := http.NewServeMux()
@@ -35,6 +38,6 @@ func main() {
 	mux.HandleFunc("/snippet/create", createSnippet)
 
 	log.Println("Запуск веб-сервера на http://127.0.0.1:4000")
-	err := http.ListenAndServe(":$PORT", mux)
+	err := http.ListenAndServe(":4000", mux)
 	log.Fatal(err)
 }
