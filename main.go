@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 )
 
 // Обработчик главной странице.
@@ -21,6 +22,11 @@ func createSnippet(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
 	// Регистрируем два новых обработчика и соответствующие URL-шаблоны в
 	// маршрутизаторе servemux
 	mux := http.NewServeMux()
@@ -29,6 +35,6 @@ func main() {
 	mux.HandleFunc("/snippet/create", createSnippet)
 
 	log.Println("Запуск веб-сервера на http://127.0.0.1:4000")
-	err := http.ListenAndServe(":4000", mux)
+	err := http.ListenAndServe(":$PORT", mux)
 	log.Fatal(err)
 }
