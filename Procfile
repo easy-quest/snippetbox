@@ -1,1 +1,0 @@
-web: bin/snippetbox
